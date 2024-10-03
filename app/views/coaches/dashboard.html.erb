@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coach Dashboard</title>
+  <%= stylesheet_link_tag 'dashboard', media: 'all', 'data-turbolinks-track': 'reload' %>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand mx-auto" href="#">Welcome, <%= current_user.first_name %></a>
+      <div class="d-flex">
+        <%= link_to 'Logout', destroy_user_session_path, method: :delete, class: 'btn btn-outline-danger' %>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5 pt-5">
+    <h1 class="text-center display-4 animated fadeInDown">Coach Dashboard</h1>
+
+    <!-- Filter Form -->
+    <div class="mb-4 filter-form">
+      <%= form_with url: coach_dashboard_path, method: :get, local: true, class: "form-inline" do |form| %>
+        <div class="form-group">
+          <%= form.label :program_name, "Filter by Program Name", class: "form-label" %>
+          <%= form.text_field :filter, value: params.dig(:filter, :program_name), name: 'filter[program_name]', class: "form-control" %>
+        </div>
+        <div class="form-group">
+          <%= form.label :company_name, "Filter by Company Name", class: "form-label" %>
+          <%= form.text_field :filter, value: params.dig(:filter, :company_name), name: 'filter[company_name]', class: "form-control" %>
+        </div>
+        <%= form.submit "Filter", class: "btn btn-primary" %>
+        <%= button_tag "Clear Filters", type: 'reset', class: 'btn btn-secondary ms-2', onclick: "clearFilters()" %>
+      <% end %>
+    </div>
+
+    <!-- Assigned Programs -->
+    <% if @no_assigned_programs %>
+      <div class="alert alert-warning text-center" role="alert">
+        You are not assigned to any programs yet.
+      </div>
+    <% else %> 
+      <h2 class="mt-4 text-center animated fadeInUp">Your Sessions</h2>
+      <div class="table-responsive animated fadeInUp">
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>Program</th>
+              <th>Description</th>
+              <th>Company</th>
+              <th>Coaches</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @assigned_programs.each do |company_program| %>
+              <tr>
+                <td><%= company_program.program.name %></td>
+                <td><%= company_program.program.description %></td>
+                <td><%= company_program.company.name %></td>
+                <td>
+                <ul>
+                  <% company_program.company_program_coaches.each do |cp_coach| %>
+                    <li>
+                      <strong><%= cp_coach.coach.full_name %></strong> - 
+                      <span id="timer-<%= cp_coach.id %>">
+                        <% end_time = cp_coach.end_time %>
+                        <% if end_time.present? %>
+                          <!-- Countdown script -->
+                          <script>
+                            var endTime = new Date("<%= end_time.strftime('%Y-%m-%d %H:%M:%S') %>").getTime(); // Get session end time
+                            var now = new Date().getTime(); // Get current time
+                            var timeLeft = endTime - now;
+              
+                            function updateCountdown(timerId, timeLeft) {
+                              var x = setInterval(function() {
+                                if (timeLeft < 0) {
+                                  clearInterval(x);
+                                  document.getElementById(timerId).innerHTML = "Session has ended.";
+                                } else {
+                                  var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                  var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                                  var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                                  document.getElementById(timerId).innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
+                                  timeLeft -= 1000;
+                                }
+                              }, 1000);
+                            }
+              
+                            if (timeLeft > 0) {
+                              updateCountdown('timer-<%= cp_coach.id %>', timeLeft);
+                            } else {
+                              document.getElementById('timer-<%= cp_coach.id %>').innerHTML = "Session has ended.";
+                            }
+                          </script>
+                        <% else %>
+                          <span class="text-warning">No end time available</span>
+                        <% end %>
+                      </span>
+                    </li>
+                  <% end %>
+                </ul>
+              </td>
+              
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </div>
+  
+  <!-- Pagination Links -->
+  <div class="d-flex justify-content-center mb-4"> <!-- Added mb-4 for bottom margin -->
+    <%= paginate @assigned_programs %>
+  </div>
+
+  <script>
+    function clearFilters() {
+      // Clear the filter fields
+      $('input[name="filter[program_name]"]').val('');
+      $('input[name="filter[company_name]"]').val('');
+      $('form').submit();
+    }
+  </script>
+</body>
+</html>

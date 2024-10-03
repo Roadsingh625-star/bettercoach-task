@@ -1,0 +1,27 @@
+<h2>Employees for <%= @company.name %></h2>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Phone Number</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @employees.each do |employee| %>
+      <tr>
+        <td><%= employee.first_name %> <%= employee.last_name %></td>
+        <td><%= employee.email %></td>
+        <td><%= employee.phone_number %></td>
+        <td><%= employee.type %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<!-- Pagination Links -->
+<div class="d-flex justify-content-center">
+  <%= paginate @employees %>
+</div>

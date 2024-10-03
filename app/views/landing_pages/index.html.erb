@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Coaching App</title>
+  <%= stylesheet_link_tag 'custom', media: 'all' %>
+</head>
+
+<body>
+  <%= render 'layouts/navbar' %> <!-- Render Navbar Partial -->
+
+  <!-- Main Content -->
+  <div class="container content">
+    <div class="row">
+      <% @companies.each do |company| %>
+        <div class="col-md-4">
+          <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title"><%= company.name %></h5>
+              <p class="card-text company-description"><%= company.description %></p>
+              <%= link_to 'View Programs', company_program_path(company), class: 'btn btn-primary' %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Pagination Section -->
+  <div class="pagination-container">
+    <%= will_paginate @companies %>
+  </div>
+  <%= render 'layouts/footer' %> <!-- Render Footer Partial -->
+</body>
+</html>

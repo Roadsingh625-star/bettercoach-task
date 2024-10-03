@@ -1,0 +1,69 @@
+<div class="container pt-3">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+    <% if @company_program.present? %>
+      <!-- Program Title -->
+      <h1 class="text-center my-4 animate__animated animate__fadeInDown"><%= @program.name %></h1>
+
+      <!-- Program Details Card -->
+      <div class="card shadow-lg animate__animated animate__fadeInUp">
+        <div class="card-body">
+          <!-- Program Description -->
+          <p><strong>Description:</strong> <%= @program.description %></p>
+
+          <!-- Coaches Information -->
+          <% if @company_program.coaches.any? %>
+            <p><strong>Coaches:</strong></p>
+            <ul>
+              <% @company_program.coaches.each do |coach| %>
+                <li><%= coach.full_name %></li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p><strong>Coaches:</strong> No coaches assigned</p>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Key Points Section -->
+      <% if @program.key_points.present? %>
+        <div class="card mt-4 shadow-lg animate__animated animate__fadeInUp">
+          <div class="card-header text-center bg-primary text-white">
+            <h3>Key Points</h3>
+          </div>
+          <div class="card-body">
+            <ul class="list-group list-group-flush">
+              <% @program.key_points.split("\r\n").each do |key_point| %>
+                <li class="list-group-item"><%= key_point %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Registered Employees Section -->
+      <div class="card mt-4 shadow-lg animate__animated animate__fadeInUp">
+        <div class="card-header text-center bg-info text-white">
+          <h3>Registered Employees</h3>
+        </div>
+        <div class="card-body text-center">
+          <!-- Show Employee Count -->
+          <p><strong>Total Employees:</strong> <%= @company_program.employees.count %></p>
+        </div>
+      </div>
+
+      <!-- Back to Programs Button -->
+      <div class="text-center mt-4">
+        <%= link_to 'Back to Programs', company_path(current_user.company), class: 'btn btn-primary' %>
+      </div>
+      <% else %>
+        <!-- Message when the company program is not present -->
+        <div class="alert alert-warning text-center">
+          <h3>You are not enrolled in this program.</h3>
+          <p>Please contact your administrator for more information.</p>
+          <%= link_to 'Back to Programs', company_path(current_user.company), class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

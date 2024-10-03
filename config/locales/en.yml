@@ -1,0 +1,7 @@
+en:
+  admin:
+    actions:
+      employees_list_action:
+        title: "Employees"
+        menu : 'Employees'
+        breadcrumb: "employee"

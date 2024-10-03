@@ -1,0 +1,53 @@
+<%= stylesheet_link_tag 'company_programs', media: 'all', 'data-turbolinks-track': 'reload' %>
+<%= stylesheet_link_tag 'custom', media: 'all' %>
+<%= render 'layouts/navbar' %> <!-- Render Navbar Partial -->
+
+<div class="container mt-5">
+  <h1 class="text-center animated fadeInDown">Programs of <%= @company.name %></h1>
+
+  <div class="table-responsive animated fadeInUp">
+    <table class="table table-hover table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Program Name</th>
+          <th>Description</th>
+          <th>Coaches</th>
+          <th>Enrolled Employees</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @company_programs.each do |company_program| %>
+          <tr>
+            <td><%= company_program.program.name %></td>
+            <td><%= company_program.program.description %></td>
+            <td>
+              <% if company_program.coaches.any? %>
+                <ul>
+                  <% company_program.coaches.each do |coach| %>
+                    <li><%= coach.full_name %></li>
+                  <% end %>
+                </ul>
+              <% else %>
+                No coaches assigned
+              <% end %>
+            </td>
+            <td>
+              <% employee_count = company_program.employees.count %>
+              <% if employee_count > 0 %>
+                <%= employee_count %> enrolled
+              <% else %>
+                No employees enrolled
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Links -->
+  <div class="d-flex justify-content-center">
+    <%= paginate @company_programs %>
+  </div>
+</div>
+<%= render 'layouts/footer' %> <!-- Render Footer Partial -->
